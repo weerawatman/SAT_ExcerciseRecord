@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกการออกกำลังกาย</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 2rem;
+        }
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .exercise-card {
+            margin-bottom: 1rem;
+            border-left: 4px solid #0d6efd;
+        }
+        #userGreeting {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .image-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            background-color: #e9ecef;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">ระบบบันทึกการออกกำลังกาย</h1>
+        
+        <!-- Login/Signup Section -->
+        <div id="authSection" class="form-container">
+            <div class="mb-3">
+                <div class="btn-group w-100" role="group">
+                    <button id="loginBtn" class="btn btn-primary active">เข้าสู่ระบบ</button>
+                    <button id="signupBtn" class="btn btn-outline-primary">ลงทะเบียน</button>
+                </div>
+            </div>
+            
+            <div id="loginForm">
+                <div class="mb-3">
+                    <label for="loginPin" class="form-label">รหัส PIN</label>
+                    <input type="password" class="form-control" id="loginPin" placeholder="กรอกรหัส PIN">
+                </div>
+                <button id="submitLogin" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
+            </div>
+            
+            <div id="signupForm" class="hidden">
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">ชื่อ-นามสกุล</label>
+                    <input type="text" class="form-control" id="fullName" placeholder="กรอกชื่อ-นามสกุล">
+                </div>
+                <div class="mb-3">
+                    <label for="employeeId" class="form-label">รหัสพนักงาน</label>
+                    <input type="text" class="form-control" id="employeeId" placeholder="กรอกรหัสพนักงาน">
+                </div>
+                <div class="mb-3">
+                    <label for="signupPin" class="form-label">ตั้งรหัส PIN</label>
+                    <input type="password" class="form-control" id="signupPin" placeholder="ตั้งรหัส PIN">
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPin" class="form-label">ยืนยันรหัส PIN</label>
+                    <input type="password" class="form-control" id="confirmPin" placeholder="ยืนยันรหัส PIN">
+                </div>
+                <button id="submitSignup" class="btn btn-primary w-100">ลงทะเบียน</button>
+            </div>
+        </div>
+        
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="hidden">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>สวัสดี, <span id="userGreeting"></span></h2>
+                <button id="logoutBtn" class="btn btn-outline-danger">ออกจากระบบ</button>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <p>จำนวนครั้งการออกกำลังกาย</p>
+                        <div class="stat-number" id="exerciseCount">0</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <p>เวลาออกกำลังกายรวม (ชั่วโมง)</p>
+                        <div class="stat-number" id="totalHours">0</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <p>เฉลี่ยต่อครั้ง (นาที)</p>
+                        <div class="stat-number" id="avgMinutes">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-container mt-4">
+                <h3 class="mb-3">เพิ่มรายการออกกำลังกาย</h3>
+                <form id="exerciseForm">
+                    <div class="mb-3">
+                        <label for="exerciseDate" class="form-label">วันที่</label>
+                        <input type="date" class="form-control" id="exerciseDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exerciseType" class="form-label">ประเภทการออกกำลังกาย</label>
+                        <select class="form-control" id="exerciseType" required>
+                            <option value="">เลือกประเภท</option>
+                            <option value="running">วิ่ง</option>
+                            <option value="walking">เดิน</option>
+                            <option value="cycling">ปั่นจักรยาน</option>
+                            <option value="swimming">ว่ายน้ำ</option>
+                            <option value="yoga">โยคะ</option>
+                            <option value="gym">ฟิตเนส</option>
+                            <option value="other">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="otherExerciseDiv" style="display: none;">
+                        <label for="otherExercise" class="form-label">ระบุประเภทอื่นๆ</label>
+                        <input type="text" class="form-control" id="otherExercise">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exerciseDuration" class="form-label">ระยะเวลา (นาที)</label>
+                        <input type="number" class="form-control" id="exerciseDuration" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exerciseNotes" class="form-label">บันทึกเพิ่มเติม</label>
+                        <textarea class="form-control" id="exerciseNotes" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exerciseImage" class="form-label">รูปภาพ (ไม่บังคับ)</label>
+                        <input type="file" class="form-control" id="exerciseImage" accept="image/*">
+                        <div id="imagePreview" class="image-container"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">บันทึกข้อมูล</button>
+                </form>
+            </div>
+            
+            <div class="form-container mt-4">
+                <h3 class="mb-3">ประวัติการออกกำลังกาย</h3>
+                <div id="exerciseHistory">
+                    <!-- Exercise history will be populated here -->
+                    <div class="text-center text-muted" id="noExerciseMsg">
+                        ยังไม่มีประวัติการออกกำลังกาย
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p class="mb-0">กำลังดำเนินการ กรุณารอสักครู่...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/firebase@9.17.1/firebase-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/firebase@9.17.1/firebase-storage.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Google Sheets API Configuration
+        const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
+        const GOOGLE_SHEET_ID = 'YOUR_GOOGLE_SHEET_ID';
+        
+        // Application Constants
+        const USERS_SHEET_NAME = 'Users';
+        const EXERCISES_SHEET_NAME = 'Exercises';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const storage = firebase.storage();
+            
+            // DOM Elements
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const submitLogin = document.getElementById('submitLogin');
+            const submitSignup = document.getElementById('submitSignup');
+            const authSection = document.getElementById('authSection');
+            const dashboardSection = document.getElementById('dashboardSection');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userGreeting = document.getElementById('userGreeting');
+            const exerciseForm = document.getElementById('exerciseForm');
+            const exerciseType = document.getElementById('exerciseType');
+            const otherExerciseDiv = document.getElementById('otherExerciseDiv');
+            const exerciseImage = document.getElementById('exerciseImage');
+            const imagePreview = document.getElementById('imagePreview');
+            const exerciseHistory = document.getElementById('exerciseHistory');
+            const noExerciseMsg = document.getElementById('noExerciseMsg');
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            
+            // Stats Elements
+            const exerciseCount = document.getElementById('exerciseCount');
+            const totalHours = document.getElementById('totalHours');
+            const avgMinutes = document.getElementById('avgMinutes');
+            
+            // Current User
+            let currentUser = null;
+            
+            // Check if user is logged in
+            const storedUser = localStorage.getItem('exerciseUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                showDashboard();
+            }
+            
+            // Toggle between login and signup forms
+            loginBtn.addEventListener('click', function() {
+                loginBtn.classList.add('active');
+                loginBtn.classList.remove('btn-outline-primary');
+                loginBtn.classList.add('btn-primary');
+                signupBtn.classList.remove('active');
+                signupBtn.classList.add('btn-outline-primary');
+                signupBtn.classList.remove('btn-primary');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            });
+            
+            signupBtn.addEventListener('click', function() {
+                signupBtn.classList.add('active');
+                signupBtn.classList.remove('btn-outline-primary');
+                signupBtn.classList.add('btn-primary');
+                loginBtn.classList.remove('active');
+                loginBtn.classList.add('btn-outline-primary');
+                loginBtn.classList.remove('btn-primary');
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            });
+            
+            // Handle Login
+            submitLogin.addEventListener('click', async function() {
+                const pin = document.getElementById('loginPin').value.trim();
+                
+                if (!pin) {
+                    alert('กรุณากรอกรหัส PIN');
+                    return;
+                }
+                
+                loadingModal.show();
+                
+                try {
+                    // Call Google Sheets API to find user with this PIN
+                    await gapi.client.sheets.spreadsheets.values.get({
+                        spreadsheetId: GOOGLE_SHEET_ID,
+                        range: `${USERS_SHEET_NAME}!A2:D`,
+                    }).then(response => {
+                        const users = response.result.values || [];
+                        const user = users.find(user => user[3] === pin);
+                        
+                        if (user) {
+                            currentUser = {
+                                id: user[0],
+                                name: user[1],
+                                employeeId: user[2],
+                                pin: user[3]
+                            };
+                            
+                            localStorage.setItem('exerciseUser', JSON.stringify(currentUser));
+                            showDashboard();
+                        } else {
+                            alert('รหัส PIN ไม่ถูกต้อง');
+                        }
+                        
+                        loadingModal.hide();
+                    });
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+                    loadingModal.hide();
+                }
+            });
+            
+            // Handle Signup
+            submitSignup.addEventListener('click', async function() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const employeeId = document.getElementById('employeeId').value.trim();
+                const pin = document.getElementById('signupPin').value.trim();
+                const confirmPin = document.getElementById('confirmPin').value.trim();
+                
+                if (!fullName || !employeeId || !pin) {
+                    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                    return;
+                }
+                
+                if (pin !== confirmPin) {
+                    alert('รหัส PIN ไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+                    return;
+                }
+                
+                loadingModal.show();
+                
+                try {
+                    // Call Google Sheets API to check if employee ID already exists
+                    await gapi.client.sheets.spreadsheets.values.get({
+                        spreadsheetId: GOOGLE_SHEET_ID,
+                        range: `${USERS_SHEET_NAME}!A2:D`,
+                    }).then(async response => {
+                        const users = response.result.values || [];
+                        const existingUser = users.find(user => user[2] === employeeId);
+                        
+                        if (existingUser) {
+                            alert('รหัสพนักงานนี้มีอยู่ในระบบแล้ว');
+                            loadingModal.hide();
+                            return;
+                        }
+                        
+                        // Generate a new user ID
+                        const userId = Date.now().toString();
+                        
+                        // Add new user to Google Sheet
+                        await gapi.client.sheets.spreadsheets.values.append({
+                            spreadsheetId: GOOGLE_SHEET_ID,
+                            range: `${USERS_SHEET_NAME}!A2:D2`,
+                            valueInputOption: 'USER_ENTERED',
+                            insertDataOption: 'INSERT_ROWS',
+                            resource: {
+                                values: [[userId, fullName, employeeId, pin]]
+                            }
+                        });
+                        
+                        currentUser = {
+                            id: userId,
+                            name: fullName,
+                            employeeId: employeeId,
+                            pin: pin
+                        };
+                        
+                        localStorage.setItem('exerciseUser', JSON.stringify(currentUser));
+                        showDashboard();
+                        loadingModal.hide();
+                    });
+                } catch (error) {
+                    console.error('Error during signup:', error);
+                    alert('เกิดข้อผิดพลาดในการลงทะเบียน');
+                    loadingModal.hide();
+                }
+            });
+            
+            // Handle Logout
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('exerciseUser');
+                currentUser = null;
+                authSection.classList.remove('hidden');
+                dashboardSection.classList.add('hidden');
+                document.getElementById('loginPin').value = '';
+            });
+            
+            // Toggle Other Exercise Input
+            exerciseType.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherExerciseDiv.style.display = 'block';
+                } else {
+                    otherExerciseDiv.style.display = 'none';
+                }
+            });
+            
+            // Image Preview
+            exerciseImage.addEventListener('change', function() {
+                imagePreview.innerHTML = '';
+                
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('preview-image');
+                        imagePreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Add Exercise Form Submit
+            exerciseForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!currentUser) {
+                    alert('กรุณาเข้าสู่ระบบก่อน');
+                    return;
+                }
+                
+                const date = document.getElementById('exerciseDate').value;
+                let type = document.getElementById('exerciseType').value;
+                
+                if (type === 'other') {
+                    const otherType = document.getElementById('otherExercise').value.trim();
+                    if (!otherType) {
+                        alert('กรุณาระบุประเภทการออกกำลังกาย');
+                        return;
+                    }
+                    type = otherType;
+                }
+                
+                const duration = document.getElementById('exerciseDuration').value;
+                const notes = document.getElementById('exerciseNotes').value.trim();
+                const imageFile = document.getElementById('exerciseImage').files[0];
+                
+                loadingModal.show();
+                
+                try {
+                    let imageUrl = '';
+                    
+                    // Upload image if exists
+                    if (imageFile) {
+                        const storageRef = storage.ref();
+                        const fileRef = storageRef.child(`exercise_images/${currentUser.id}_${Date.now()}`);
+                        await fileRef.put(imageFile);
+                        imageUrl = await fileRef.getDownloadURL();
+                    }
+                    
+                    // Add exercise to Google Sheet
+                    const timestamp = new Date().toISOString();
+                    await gapi.client.sheets.spreadsheets.values.append({
+                        spreadsheetId: GOOGLE_SHEET_ID,
+                        range: `${EXERCISES_SHEET_NAME}!A2:H2`,
+                        valueInputOption: 'USER_ENTERED',
+                        insertDataOption: 'INSERT_ROWS',
+                        resource: {
+                            values: [[
+                                Date.now().toString(), // ID
+                                currentUser.id, // User ID
+                                date, // Date
+                                type, // Type
+                                duration, // Duration in minutes
+                                notes, // Notes
+                                imageUrl, // Image URL
+                                timestamp // Timestamp
+                            ]]
+                        }
+                    });
+                    
+                    // Reset form
+                    exerciseForm.reset();
+                    imagePreview.innerHTML = '';
+                    
+                    // Refresh history
+                    loadExerciseHistory();
+                    loadingModal.hide();
+                    
+                    alert('บันทึกข้อมูลสำเร็จ');
+                } catch (error) {
+                    console.error('Error saving exercise:', error);
+                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                    loadingModal.hide();
+                }
+            });
+            
+            // Load Google API Client
+            function loadGoogleAPIClient() {
+                gapi.load('client', initGoogleClient);
+            }
+            
+            async function initGoogleClient() {
+                try {
+                    await gapi.client.init({
+                        apiKey: GOOGLE_API_KEY,
+                        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+                    });
+                    
+                    console.log('Google API Client initialized');
+                    
+                    // If user is already logged in, load their data
+                    if (currentUser) {
+                        loadExerciseHistory();
+                    }
+                } catch (error) {
+                    console.error('Error initializing Google API client:', error);
+                }
+            }
+            
+            // Load Exercise History
+            async function loadExerciseHistory() {
+                if (!currentUser) return;
+                
+                loadingModal.show();
+                
+                try {
+                    await gapi.client.sheets.spreadsheets.values.get({
+                        spreadsheetId: GOOGLE_SHEET_ID,
+                        range: `${EXERCISES_SHEET_NAME}!A2:H`,
+                    }).then(response => {
+                        const exercises = response.result.values || [];
+                        const userExercises = exercises.filter(ex => ex[1] === currentUser.id);
+                        
+                        // Update stats
+                        updateStats(userExercises);
+                        
+                        // Sort exercises by date (most recent first)
+                        userExercises.sort((a, b) => new Date(b[7]) - new Date(a[7]));
+                        
+                        // Update the history section
+                        exerciseHistory.innerHTML = '';
+                        
+                        if (userExercises.length === 0) {
+                            exerciseHistory.appendChild(noExerciseMsg);
+                        } else {
+                            userExercises.forEach(ex => {
+                                const exerciseId = ex[0];
+                                const date = new Date(ex[2]).toLocaleDateString('th-TH');
+                                const type = ex[3];
+                                const duration = ex[4];
+                                const notes = ex[5] || '';
+                                const imageUrl = ex[6] || '';
+                                
+                                const card = document.createElement('div');
+                                card.className = 'card exercise-card mb-3';
+                                
+                                let imageHtml = '';
+                                if (imageUrl) {
+                                    imageHtml = `
+                                        <div class="text-center mt-2">
+                                            <img src="${imageUrl}" alt="รูปการออกกำลังกาย" class="img-fluid" style="max-height: 200px;">
+                                        </div>
+                                    `;
+                                }
+                                
+                                card.innerHTML = `
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title">${type}</h5>
+                                            <span class="text-muted">${date}</span>
+                                        </div>
+                                        <p class="card-text"><strong>ระยะเวลา:</strong> ${duration} นาที</p>
+                                        ${notes ? `<p class="card-text"><strong>บันทึก:</strong> ${notes}</p>` : ''}
+                                        ${imageHtml}
+                                    </div>
+                                `;
+                                
+                                exerciseHistory.appendChild(card);
+                            });
+                        }
+                        
+                        loadingModal.hide();
+                    });
+                } catch (error) {
+                    console.error('Error loading exercise history:', error);
+                    alert('เกิดข้อผิดพลาดในการโหลดประวัติการออกกำลังกาย');
+                    loadingModal.hide();
+                }
+            }
+            
+            // Update Stats
+            function updateStats(exercises) {
+                const count = exercises.length;
+                let totalMinutes = 0;
+                
+                exercises.forEach(ex => {
+                    totalMinutes += parseInt(ex[4]) || 0;
+                });
+                
+                const hours = (totalMinutes / 60).toFixed(1);
+                const avg = count > 0 ? Math.round(totalMinutes / count) : 0;
+                
+                exerciseCount.textContent = count;
+                totalHours.textContent = hours;
+                avgMinutes.textContent = avg;
+            }
+            
+            // Show Dashboard
+            function showDashboard() {
+                userGreeting.textContent = currentUser.name;
+                authSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                
+                // Set today's date as default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('exerciseDate').value = today;
+                
+                // Load exercise history
+                loadExerciseHistory();
+            }
+            
+            // Initialize
+            loadGoogleAPIClient();
+        });
+    </script>
+</body>
+</html>
